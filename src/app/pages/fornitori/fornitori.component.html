@@ -1,0 +1,13 @@
+<p>
+  fornitori works!
+</p>
+<input [(ngModel)]="ragioneSociale" type="text">
+<button (click)="fornitoriService.addFornitore(ragioneSociale)">Aggiuungi</button>
+
+<div *ngIf="(fornitori | async) as listaForn">
+  @for (fornitore of listaForn; track fornitore.id) {
+    <li>{{ fornitore.ragioneSociale }} <button (click)="fornitoriService.deleteFornitore(fornitore.id)">(X)</button></li> 
+    } @empty {
+    <p>Non ci sono fornitori.</p>
+    }
+</div>

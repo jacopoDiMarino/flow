@@ -1,0 +1,521 @@
+<div class="grid">
+  <!-- Colonna sinistra -->
+  <div class="col-8 p-0">
+    <!-- Filtro -->
+    <div class="col-12 p-2">
+      <p-card header="Filtro">
+        <div
+          class="flex flex-column md:flex-row justify-between gap-4 text-sm pt-2"
+        >
+          <!-- Fornitore -->
+          <div class="w-full md:w-4/12">
+            <p-floatlabel variant="on">
+              <p-select
+                inputId="fornitore"
+                class="w-full"
+                [options]="(fornitori | async) || []"
+                optionLabel="ragioneSociale"
+                optionValue="id"
+                [(ngModel)]="filtroFornitore"
+                (onChange)="filtraConti()"
+                [filter]="true"
+                [showClear]="true"
+              />
+              <label for="fornitore">Fornitore</label>
+            </p-floatlabel>
+          </div>
+          <!-- Date & Reset -->
+          <div
+            class="w-full md:w-8/12 flex flex-wrap md:flex-nowrap gap-3 justify-end items-end"
+          >
+            <div class="flex-1 min-w-[8rem]">
+              <p-floatlabel variant="on">
+                <p-datepicker
+                  inputId="dataInizio"
+                  [(ngModel)]="filtroDataInizio"
+                  (ngModelChange)="filtraConti()"
+                  dateFormat="dd/mm/yy"
+                  showIcon
+                  styleClass="w-full"
+                  [monthNavigator]="true"
+                  [yearNavigator]="true"
+                  [yearRange]="'2000:' + oggi.getFullYear()"
+                  [maxDate]="oggi"
+                />
+                <label for="dataInizio">Data inizio</label>
+              </p-floatlabel>
+            </div>
+            <div class="flex-1 min-w-[8rem]">
+              <p-floatlabel variant="on">
+                <p-datepicker
+                  [monthNavigator]="true"
+                  [yearNavigator]="true"
+                  [yearRange]="'2000:' + oggi.getFullYear()"
+                  [maxDate]="oggi"
+                  inputId="dataFine"
+                  [(ngModel)]="filtroDataFine"
+                  (ngModelChange)="filtraConti()"
+                  dateFormat="dd/mm/yy"
+                  showIcon
+                  styleClass="w-full"
+                />
+                <label for="dataFine">Data fine</label>
+              </p-floatlabel>
+            </div>
+            <div>
+              <p-button
+                icon="pi pi-refresh"
+                severity="secondary"
+                (click)="resetFiltri()"
+              />
+            </div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Conti -->
+    <div class="col-12 p-2">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="flex justify-between items-center">
+            <span class="p-card-title">Conti</span>
+            <p-button
+              icon="pi pi-plus"
+              [text]="true"
+              (click)="showDialogConto()"
+            ></p-button>
+          </div>
+        </ng-template>
+        <div class="space-y-2">
+          <ng-container *ngIf="contiFiltrati | async as contiF">
+            <p-virtualscroller
+              *ngIf="contiF.length > 0; else noConti"
+              [items]="contiF"
+              [itemSize]="60"
+              scrollHeight="650px"
+            >
+              <ng-template pTemplate="item" let-conto>
+                <div
+                  class="p-2 border-bottom-1 surface-border flex justify-between items-center text-sm"
+                  style="height: 60px"
+                >
+                  <!-- Sinistra -->
+                  <div class="flex items-center gap-3 overflow-hidden">
+                    <span
+                      class="px-2 py-1 border-round text-xs font-medium text-center"
+                      style="min-width: 90px; display: inline-block"
+                      [ngClass]="{
+                        'bg-blue-100 text-blue-700':
+                          conto.tipologia === 'ACQUISTO',
+                        'bg-green-100 text-green-700':
+                          conto.tipologia === 'PAGAMENTO',
+                        'bg-yellow-100 text-yellow-800':
+                          conto.tipologia === 'RIMBORSO',
+                      }"
+                    >
+                      {{ conto.tipologia }}
+                    </span>
+                    <span class="text-500 whitespace-nowrap w-10rem">
+                      {{ conto.dataOperazione | date: "dd/MM/yyyy" }}
+                    </span>
+                    <span class="text-700 font-medium truncate max-w-12rem">
+                      {{
+                        conto.idFornitore
+                          | fornitoreNome: (fornitori | async) || []
+                      }}
+                    </span>
+                    <span class="text-600 italic truncate max-w-12rem">
+                      {{ conto.descrizione }}
+                    </span>
+                  </div>
+                  <!-- Destra -->
+                  <div class="flex items-center gap-2 text-right">
+                    <span
+                      class="font-bold text-sm"
+                      [ngClass]="{
+                        'text-blue-600': conto.tipologia === 'ACQUISTO',
+                        'text-green-600': conto.tipologia === 'PAGAMENTO',
+                        'text-yellow-600': conto.tipologia === 'RIMBORSO',
+                      }"
+                    >
+                      {{ conto.importo | number: "1.2-2" }}€
+                    </span>
+                    <p-button
+                      icon="pi pi-pencil"
+                      size="small"
+                      (click)="showDialogConto(conto)"
+                      styleClass="p-button-d p-button-sm"
+                      severity="secondary"
+                    />
+                    <p-button
+                      icon="pi pi-trash"
+                      size="small"
+                      styleClass="p-button-text p-button-sm"
+                      severity="danger"
+                      (click)="confirmDelete(conto.id)"
+                    />
+                  </div>
+                </div>
+              </ng-template>
+            </p-virtualscroller>
+            <ng-template #noConti>
+              <p class="p-3 text-center text-sm text-500">Non ci sono conti.</p>
+            </ng-template>
+          </ng-container>
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Colonna destra -->
+  <div class="col-4 p-0 space-y-4">
+    <!-- Riepilogo annuale -->
+    <div class="col-12 p-2">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="flex justify-between items-center">
+            <span class="p-card-title">Riepilogo</span>
+            <p-button
+              severity="secondary"
+              icon="pi pi-info-circle"
+              [text]="true"
+              (click)="opRiepilogo.toggle($event)"
+            ></p-button>
+          </div>
+        </ng-template>
+        <div class="space-y-3 mt-3 text-sm text-500">
+          <ng-container *ngFor="let key of intervalOrder; let i = index">
+            <div class="flex justify-between items-center">
+              <!-- Etichetta personalizzata per ogni bucket -->
+              <span>
+                <!-- 0: prima di 3 anni fa → intervallo completo -->
+                <ng-container *ngIf="i === 0; else notFirst">
+                  {{ intervals[key].da | date: "dd/MM/yy" }}
+                  –
+                  {{ intervals[key].a | date: "dd/MM/yy" }}
+                </ng-container>
+                <ng-template #notFirst>
+                  <!-- 1–2: bucket annuali (due anni fa, anno precedente) → "Anno YYYY" -->
+                  <ng-container *ngIf="i > 0 && i < 3; else notAnnual">
+                    {{ intervals[key].da | date: "yyyy" }}
+                  </ng-container>
+                  <ng-template #notAnnual>
+                    <!-- 3: resto anno corrente → intervallo completo -->
+                    <ng-container *ngIf="i === 3; else lastThree">
+                      {{ intervals[key].da | date: "dd/MM" }}
+                      -
+                      {{ intervals[key].a | date: "dd/MM/yyyy" }}
+                    </ng-container>
+                    <ng-template #lastThree>
+                      <!-- ≥4: ultimi 3 mesi → solo nome mese in italiano uppercase -->
+                      {{ intervals[key].da | date: "LLLL" | uppercase }}
+                    </ng-template>
+                  </ng-template>
+                </ng-template>
+              </span>
+
+              <!-- Valori netti e pagamenti -->
+              <span class="space-x-1 text-right">
+                <span class="text-blue-600 font-semibold">
+                  {{ summary[key].netAcquisti | number: "1.2-2" }}€
+                </span>
+                /
+                <span class="text-green-600 font-semibold">
+                  {{ summary[key].pagamenti | number: "1.2-2" }}€
+                </span>
+              </span>
+            </div>
+          </ng-container>
+        </div>
+
+        <hr class="my-3" />
+
+        <!-- Totali complessivi -->
+        <div class="space-y-2 text-end text-sm text-700">
+          <div>
+            <p class="m-0 font-bold">Totale Acquisti netti:</p>
+            <p class="text-blue-600 text-lg font-bold m-0">
+              {{ totaleNetAcquisti | number: "1.2-2" }}€
+            </p>
+          </div>
+          <div>
+            <p class="m-0 font-bold">Totale Pagamenti:</p>
+            <p class="text-green-600 text-lg font-bold m-0">
+              {{ totalePagamenti | number: "1.2-2" }}€
+            </p>
+          </div>
+          <div>
+            <p class="m-0 font-bold">
+              {{
+                debitoResiduo >= 0 ? "Debito residuo" : "**Credito** residuo"
+              }}:
+            </p>
+            <p
+              class="text-lg font-bold m-0"
+              [ngClass]="{
+                'text-red-600': debitoResiduo >= 0,
+                'text-green-600': debitoResiduo < 0,
+              }"
+            >
+              {{
+                (debitoResiduo >= 0 ? debitoResiduo : -debitoResiduo)
+                  | number: "1.2-2"
+              }}€
+            </p>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>
+
+<!-- Dialog per add/edit -->
+<p-dialog
+  header="{{ editingConto ? 'Modifica Conto' : 'Nuovo Conto' }}"
+  [(visible)]="displayDialog"
+  [modal]="true"
+  [style]="{ width: '350px' }"
+  [closeOnEscape]="true"
+  (onHide)="onDialogHide()"
+  class="p-shadow-4"
+>
+  <form [formGroup]="formConto" class="p-fluid space-y-4">
+    <!-- Row 1: Fornitore a sinistra, Data a destra -->
+    <div class="flex gap-4">
+      <!-- Fornitore -->
+      <div class="flex-1 flex flex-column gap-1">
+        <label for="idFornitore" class="font-medium text-700">Fornitore</label>
+        <p-select
+          id="idFornitore"
+          [options]="(fornitori | async) || []"
+          optionLabel="ragioneSociale"
+          optionValue="id"
+          formControlName="idFornitore"
+          [filter]="true"
+          class="w-full"
+          appendTo="body"
+          inputStyleClass="p-inputtext-sm"
+        ></p-select>
+      </div>
+      <!-- Data operazione -->
+      <div class="flex-1 flex flex-column gap-1">
+        <label for="dataOperazione" class="font-medium text-700">Data</label>
+        <p-datepicker
+          id="dataOperazione"
+          formControlName="dataOperazione"
+          dateFormat="dd/mm/yy"
+          showIcon
+          styleClass="w-full"
+          appendTo="body"
+          [monthNavigator]="true"
+          [yearNavigator]="true"
+          [yearRange]="'2000:' + oggi.getFullYear()"
+          [maxDate]="oggi"
+        ></p-datepicker>
+      </div>
+    </div>
+
+    <!-- Row 2: Tipologia -->
+    <div class="flex flex-column gap-1">
+      <label for="tipologia" class="font-medium text-700">Tipologia</label>
+      <p-select
+        id="tipologia"
+        [options]="getTipologieConto()"
+        formControlName="tipologia"
+        class="w-full"
+        appendTo="body"
+        [filter]="false"
+        [showClear]="true"
+        panelStyleClass="p-pt-2"
+        inputStyleClass="p-inputtext-sm"
+      >
+        <ng-template pTemplate="selectedItem" let-item>
+          <span
+            class="px-2 py-1 border-round text-xs font-medium inline-block"
+            [ngClass]="{
+              'bg-blue-100 text-blue-700': item === 'ACQUISTO',
+              'bg-green-100 text-green-700': item === 'PAGAMENTO',
+              'bg-yellow-100 text-yellow-800': item === 'RIMBORSO',
+            }"
+          >
+            {{ item }}
+          </span>
+        </ng-template>
+        <ng-template pTemplate="item" let-item>
+          <div class="flex items-center gap-2 p-1">
+            <span
+              class="px-2 py-1 border-round text-xs font-medium inline-block"
+              [ngClass]="{
+                'bg-blue-100 text-blue-700': item === 'ACQUISTO',
+                'bg-green-100 text-green-700': item === 'PAGAMENTO',
+                'bg-yellow-100 text-yellow-800': item === 'RIMBORSO',
+              }"
+            >
+              {{ item }}
+            </span>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+
+    <!-- Row 3: Descrizione -->
+    <div class="flex flex-column gap-1">
+      <label for="descrizione" class="font-medium text-700">Descrizione</label>
+      <textarea
+        id="descrizione"
+        pTextarea
+        formControlName="descrizione"
+        rows="3"
+        autoResize="true"
+        class="w-full resize-none p-inputtext-sm"
+        maxlength="100"
+      ></textarea>
+    </div>
+
+    <!-- Row 4: Importo -->
+    <div class="flex flex-column gap-1">
+      <label for="importo" class="font-medium text-right text-700"
+        >Importo</label
+      >
+      <p-inputNumber
+        id="importo"
+        formControlName="importo"
+        mode="currency"
+        currency="EUR"
+        locale="it-IT"
+        [minFractionDigits]="2"
+        [maxFractionDigits]="2"
+        styleClass="w-full"
+        [inputStyleClass]="
+          'text-2xl font-bold no-border text-right ' +
+          (formConto.get('tipologia')?.value === 'ACQUISTO'
+            ? 'text-blue-600'
+            : formConto.get('tipologia')?.value === 'PAGAMENTO'
+              ? 'text-green-600'
+              : formConto.get('tipologia')?.value === 'RIMBORSO'
+                ? 'text-yellow-600'
+                : '')
+        "
+      ></p-inputNumber>
+    </div>
+
+    <!-- Footer con bottoni differenziati -->
+    <p-footer class="flex justify-between gap-2">
+      <p-button
+        label="Annulla"
+        [text]="true"
+        (click)="displayDialog = false"
+      ></p-button>
+      <p-button
+        label="Salva"
+        icon="pi pi-check"
+        severity="primary"
+        (click)="salvaConto()"
+        [disabled]="formConto.invalid"
+      ></p-button>
+    </p-footer>
+  </form>
+</p-dialog>
+
+<!-- x Riepilogo -->
+<p-popover #opRiepilogo>
+  <div class="flex justify-between items-center">
+    <span class="p-card-title p-2 font-bold">Guida al Riepilogo</span>
+  </div>
+
+  <div class="text-sm space-y-4 p-4 w-[45rem] h-[45rem] overflow-y-scroll">
+    <!-- Bucket 1: Prima di 3 anni fa -->
+    <section class="space-y-1">
+      <h5 class="font-semibold text-700">Prima di 3 anni fa</h5>
+      <p class="text-500">
+        Calcola tutti gli <strong>Acquisti netti</strong> (acquisti – rimborsi)
+        e i <strong>Pagamenti</strong> registrati fino al 31 dicembre dell’anno
+        antecedente al triennio più recente.
+      </p>
+      <code class="block bg-surface-200 p-2 rounded text-xs">
+        SUM(acquisti – rimborsi, pagamenti) WHERE data ≤ 31/12/(ANNO–3)
+      </code>
+    </section>
+
+    <!-- Bucket 2: Due anni fa -->
+    <section class="space-y-1">
+      <h5 class="font-semibold text-700">Due anni fa</h5>
+      <p class="text-500">
+        Raggruppa <strong>Acquisti netti</strong> e <strong>Pagamenti</strong>
+        per tutto l’anno solare di due anni fa.
+      </p>
+      <code class="block bg-surface-200 p-2 rounded text-xs">
+        SUM(acquisti – rimborsi, pagamenti) WHERE YEAR(data) = ANNO–2
+      </code>
+    </section>
+
+    <!-- Bucket 3: Anno precedente -->
+    <section class="space-y-1">
+      <h5 class="font-semibold text-700">Anno precedente</h5>
+      <p class="text-500">
+        Totali di <strong>Acquisti netti</strong> e <strong>Pagamenti</strong>
+        dell’anno solare immediatamente precedente.
+      </p>
+      <code class="block bg-surface-200 p-2 rounded text-xs">
+        SUM(acquisti – rimborsi, pagamenti) WHERE YEAR(data) = ANNO–1
+      </code>
+    </section>
+
+    <!-- Bucket 4: Resto dell’anno corrente -->
+    <section class="space-y-1">
+      <h5 class="font-semibold text-700">Resto dell’anno corrente</h5>
+      <p class="text-500">
+        Somma di <strong>Acquisti netti</strong> (acquisti – rimborsi) e
+        <strong>Pagamenti</strong> da inizio anno fino all’ultimo giorno prima
+        dell’inizio degli ultimi tre mesi.
+      </p>
+      <code class="block bg-surface-200 p-2 rounded text-xs">
+        SUM(acquisti – rimborsi) e SUM(pagamenti) WHERE data ≥ 01/01/ANNO AND
+        data &lt; primo_giorno_del_terzultimo_mese
+      </code>
+    </section>
+
+    <!-- Bucket 5-7: Ultimi 3 mesi -->
+    <section class="space-y-1">
+      <h5 class="font-semibold text-700">Ultimi 3 mesi</h5>
+      <p class="text-500">Per ciascuno degli ultimi tre mesi:</p>
+      <div class="list-disc list-inside text-500 space-y-1">
+        <p>
+          <code class="inline">
+            Acquisti netti = SUM(acquisti – rimborsi) WHERE mese = mese_corrente
+          </code>
+        </p>
+        <p>
+          <code class="inline">
+            Pagamenti = SUM(pagamenti) WHERE mese = mese_corrente
+          </code>
+        </p>
+      </div>
+    </section>
+
+    <!-- Totali complessivi -->
+    <section class="space-y-1">
+      <h5 class="font-semibold text-700">Totale Acquisti netti</h5>
+      <p class="text-500">
+        Somma di tutti gli Acquisti netti (acquisti – rimborsi) dei sette
+        intervalli.
+      </p>
+
+      <h5 class="font-semibold text-700 mt-3">Totale Pagamenti</h5>
+      <p class="text-500">Somma di tutti i Pagamenti dei sette intervalli.</p>
+    </section>
+
+    <!-- Debito residuo -->
+    <section class="space-y-1">
+      <h5 class="font-semibold text-700">Debito residuo</h5>
+      <p class="text-500">
+        Differenza tra <strong>Totale Acquisti netti</strong> e
+        <strong>Totale Pagamenti</strong>:
+      </p>
+      <code class="block bg-surface-200 p-2 rounded text-xs">
+        Debito residuo = Totale Acquisti netti – Totale Pagamenti
+      </code>
+    </section>
+  </div>
+</p-popover>

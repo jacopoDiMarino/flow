@@ -1,0 +1,109 @@
+<div class="grid gap-4">
+  <!-- Acquisti -->
+  <p-card header="Acquisti negli ultimi 12 mesi">
+    <div style="height: 300px">
+      <p-chart
+        type="bar"
+        [data]="acquistiChartData"
+        [options]="chartOptions"
+      ></p-chart>
+    </div>
+  </p-card>
+
+  <!-- Pagamenti -->
+  <p-card header="Pagamenti negli ultimi 12 mesi">
+    <div style="height: 300px">
+      <p-chart
+        type="bar"
+        [data]="pagamentiChartData"
+        [options]="chartOptions"
+      ></p-chart>
+    </div>
+  </p-card>
+
+  <!-- Totali -->
+  <p-card header="Totali">
+    <div class="text-sm space-y-2">
+      <p>
+        <strong>Totale Acquisti:</strong>
+        {{ totaleAcquisti | number: "1.2-2" }} €
+      </p>
+      <p>
+        <strong>Totale Pagamenti:</strong>
+        {{ totalePagamenti | number: "1.2-2" }} €
+      </p>
+      <p
+        [ngClass]="{
+          'text-red-600': totaleDebito >= 0,
+          'text-green-600': totaleDebito < 0,
+        }"
+      >
+        <strong
+          >{{
+            totaleDebito >= 0 ? "Debito residuo" : "Credito residuo"
+          }}:</strong
+        >
+        {{
+          totaleDebito >= 0
+            ? (totaleDebito | number: "1.2-2")
+            : (-totaleDebito | number: "1.2-2")
+        }}
+        €
+      </p>
+    </div>
+  </p-card>
+
+  <p-card header="Andamento Mensile Entrate/Uscite" class="mb-4">
+    <p-chart
+      type="line"
+      [data]="monthlyTrendChartData"
+      [options]="monthlyTrendChartOptions"
+    ></p-chart>
+  </p-card>
+
+  <p-card header="Distribuzione spese per fornitore" class="mb-4">
+    <p-chart
+      type="pie"
+      [data]="distribuzioneSpeseFornitoriChartData"
+      [options]="distribuzioneSpeseFornitoriChartOptions"
+      style="height: 300px"
+    ></p-chart>
+  </p-card>
+
+  <p-card header="Previsione Cash Flow (ultimi 12 mesi + prossimi 3 mesi)">
+    <p-chart
+      type="line"
+      [data]="previsioneCashFlowChartData"
+      [options]="previsioneCashFlowChartOptions"
+      style="height: 350px"
+    ></p-chart>
+  </p-card>
+
+  <p-card header="Crescita spese mese su mese">
+    <p-chart
+      type="bar"
+      [data]="crescitaSpeseChartData"
+      [options]="crescitaSpeseChartOptions"
+      style="height: 300px"
+    ></p-chart>
+  </p-card>
+
+  <p-card header="Debito netto mensile (Acquisti - Pagamenti)">
+    <p-chart
+      type="line"
+      [data]="debitoNettoChartData"
+      [options]="debitoNettoChartOptions"
+      style="height: 300px"
+    >
+    </p-chart>
+  </p-card>
+
+  <p-card header="Analisi stagionale acquisti (mese per mese)">
+    <p-chart
+      type="line"
+      [data]="seasonalChartData"
+      [options]="seasonalChartOptions"
+      style="height: 350px"
+    ></p-chart>
+  </p-card>
+</div>

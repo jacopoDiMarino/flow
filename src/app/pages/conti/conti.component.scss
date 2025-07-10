@@ -1,0 +1,14 @@
+::ng-deep .no-border {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    background: transparent !important;
+  }
+
+  :host ::ng-deep .p-card-title {
+    /* se vuoi un colore leggermente diverso */
+    color: #4a4a4a;
+  }
+  :host ::ng-deep .p-card-header .flex {
+    padding: .75rem 1rem; /* conferma il padding di header */
+  }
