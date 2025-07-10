@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { MenuItem } from 'primeng/api';
-import { AppMenuitem } from './app.menuitem';
+import { Component } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { RouterModule } from "@angular/router";
+import { MenuItem } from "primeng/api";
+import { AppMenuitem } from "./app.menuitem";
 
 @Component({
-  selector: 'app-menu',
+  selector: "app-menu",
   standalone: true,
   imports: [CommonModule, AppMenuitem, RouterModule],
   template: `<ul class="layout-menu">
@@ -27,72 +27,72 @@ export class AppMenu {
   ngOnInit() {
     this.model = [
       {
-        label: 'Home',
+        label: "Home",
         items: [
           {
-            label: 'Dashboard',
-            icon: 'pi pi-fw pi-home',
-            routerLink: ['/dashboard'],
+            label: "Dashboard",
+            icon: "pi pi-fw pi-home",
+            routerLink: ["/dashboard"],
           },
         ],
       },
       {
-        label: 'Conti',
+        label: "Conti",
         items: [
           {
-            label: 'Tabella',
-            icon: 'pi pi-fw pi-table',
-            routerLink: ['/conti'],
+            label: "Tabella",
+            icon: "pi pi-fw pi-table",
+            routerLink: ["/conti"],
           },
           {
-            label: 'Grafici',
-            icon: 'pi pi-fw pi-chart-bar',
-            routerLink: ['/statistiche-conti'],
+            label: "Grafici",
+            icon: "pi pi-fw pi-chart-bar",
+            routerLink: ["/statistiche-conti"],
           },
         ],
       },
       {
-        label: 'Fatture',
+        label: "Fatture",
         items: [
           {
-            label: 'Acquisto',
-            icon: 'pi pi-fw pi-users',
-            routerLink: ['/fornitori'],
+            label: "Acquisto",
+            icon: "pi pi-fw pi-users",
+            routerLink: ["/fatture-acquisto"],
           },
           {
-            label: 'Vendita',
-            icon: 'pi pi-fw pi-users',
-            routerLink: ['/fornitori'],
+            label: "Vendita",
+            icon: "pi pi-fw pi-users",
+            routerLink: ["/fornidftori"],
           },
         ],
       },
       {
-        label: 'Pagine',
+        label: "Pagine",
         items: [
           {
-            label: 'Corrispettivi',
-            icon: 'pi pi-fw pi-euro',
-            routerLink: ['/corrispettivi'],
+            label: "Corrispettivi",
+            icon: "pi pi-fw pi-euro",
+            routerLink: ["/corrispettivi"],
           },
           {
-            label: 'Personale',
-            icon: 'pi pi-fw pi-users',
-            routerLink: ['/personale'],
+            label: "Personale",
+            icon: "pi pi-fw pi-users",
+            routerLink: ["/personale"],
           },
           {
-            label: 'Servizi',
-            icon: 'pi pi-fw pi-globe',
-            routerLink: ['/servizi'],
+            label: "Servizi",
+            icon: "pi pi-fw pi-globe",
+            routerLink: ["/servizi"],
           },
         ],
       },
       {
-        label: 'Impostazioni',
+        label: "Impostazioni",
         items: [
           {
-            label: 'Fornitori',
-            icon: 'pi pi-fw pi-users',
-            routerLink: ['/fornitori'],
+            label: "Fornitori",
+            icon: "pi pi-fw pi-users",
+            routerLink: ["/fornitori"],
           },
         ],
       },

@@ -1,0 +1,171 @@
+<div class="p-4 space-y-4">
+  <div class="flex justify-between items-center">
+    <h2 class="text-xl font-semibold">Fatture di Acquisto</h2>
+    <div class="space-x-2">
+      <p-button
+        label="Importa CSV"
+        icon="pi pi-upload"
+        (onClick)="csvInput.click()"
+      ></p-button>
+      <p-button
+        label="Nuova Fattura"
+        icon="pi pi-plus"
+        (onClick)="showDialog()"
+      ></p-button>
+      <input
+        #csvInput
+        type="file"
+        accept=".csv"
+        style="display: none"
+        (change)="onCsvSelected($event)"
+      />
+    </div>
+  </div>
+
+  <p-table
+    *ngIf="fattureImportPreview.length > 0"
+    [value]="fattureImportPreview"
+    responsiveLayout="scroll"
+    class="mt-4"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Numero</th>
+        <th>Data Emissione</th>
+        <th>Imponibile</th>
+        <th>Imposta</th>
+        <th>Fornitore</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-row let-i="rowIndex">
+      <tr>
+        <td>{{ row.dati.numeroFattura }}</td>
+        <td>{{ row.dati.dataEmissione | date: "dd/MM/yyyy" }}</td>
+        <td>{{ row.dati.imponibile | number: "1.2-2" }} €</td>
+        <td>{{ row.dati.imposta | number: "1.2-2" }} €</td>
+        <td>
+          <p-select
+            [options]="(fornitoriService.fornitori | async) || undefined"
+            optionLabel="ragioneSociale"
+            [(ngModel)]="fattureImportPreview[i].fornitoreSelezionato"
+            placeholder="Seleziona"
+            styleClass="w-full"
+          ></p-select>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-button
+    label="Importa Fatture"
+    icon="pi pi-save"
+    class="mt-3"
+    (onClick)="salvaImportFatture()"
+  />
+</div>
+
+<p-dialog
+  header="{{ editingFattura ? 'Modifica Fattura' : 'Nuova Fattura' }}"
+  [(visible)]="displayDialog"
+  [modal]="true"
+  [style]="{ width: '500px' }"
+>
+  <form [formGroup]="formFattura" class="p-fluid space-y-3">
+    <div class="p-field">
+      <label for="numeroFattura">Numero Fattura</label>
+      <input
+        id="numeroFattura"
+        type="text"
+        pInputText
+        formControlName="numeroFattura"
+      />
+    </div>
+
+    <div class="p-field">
+      <label for="dataEmissione">Data Emissione</label>
+      <p-calendar
+        inputId="dataEmissione"
+        formControlName="dataEmissione"
+        dateFormat="dd/mm/yy"
+        showIcon
+      ></p-calendar>
+    </div>
+
+    <div class="p-field">
+      <label for="dataTrasmissione">Data Trasmissione</label>
+      <p-calendar
+        inputId="dataTrasmissione"
+        formControlName="dataTrasmissione"
+        dateFormat="dd/mm/yy"
+        showIcon
+      ></p-calendar>
+    </div>
+
+    <div class="p-field">
+      <label for="codiceFiscaleFornitore">Codice Fiscale</label>
+      <input
+        id="codiceFiscaleFornitore"
+        type="text"
+        pInputText
+        formControlName="codiceFiscaleFornitore"
+      />
+    </div>
+
+    <div class="p-field">
+      <label for="pIvaFornitore">Partita IVA</label>
+      <input
+        id="pIvaFornitore"
+        type="text"
+        pInputText
+        formControlName="pIvaFornitore"
+      />
+    </div>
+
+    <div class="p-field">
+      <label for="denominazioneFornitore">Denominazione</label>
+      <input
+        id="denominazioneFornitore"
+        type="text"
+        pInputText
+        formControlName="denominazioneFornitore"
+      />
+    </div>
+
+    <div class="p-field">
+      <label for="imponibile">Imponibile</label>
+      <p-inputNumber
+        inputId="imponibile"
+        formControlName="imponibile"
+        mode="decimal"
+        [minFractionDigits]="2"
+        [maxFractionDigits]="2"
+      ></p-inputNumber>
+    </div>
+
+    <div class="p-field">
+      <label for="imposta">Imposta</label>
+      <p-inputNumber
+        inputId="imposta"
+        formControlName="imposta"
+        mode="decimal"
+        [minFractionDigits]="2"
+        [maxFractionDigits]="2"
+      ></p-inputNumber>
+    </div>
+
+    <div class="p-dialog-footer">
+      <p-button
+        label="Annulla"
+        icon="pi pi-times"
+        (click)="displayDialog = false"
+        text
+      ></p-button>
+      <p-button
+        label="Salva"
+        icon="pi pi-check"
+        (click)="salvaFattura()"
+        [disabled]="formFattura.invalid"
+      ></p-button>
+    </div>
+  </form>
+</p-dialog>
