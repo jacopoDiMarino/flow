@@ -1,1 +1,712 @@
-ciaone
+<div class="grid">
+  <!-- Colonna sinistra -->
+  <div class="col-8 p-0">
+    <!-- Filtro -->
+    <div class="col-12 p-2">
+      <p-card header="Filtri">
+        <!-- Prima riga: Filtri principali sempre visibili -->
+        <div class="flex gap-3 mb-3">
+          <!-- Fornitore -->
+          <div class="flex-1">
+            <p-floatlabel variant="on">
+              <p-select
+                inputId="fornitore"
+                class="w-full"
+                [options]="(fornitori | async) || []"
+                optionLabel="ragioneSociale"
+                optionValue="id"
+                [(ngModel)]="filtroFornitore"
+                (onChange)="filtraFatture()"
+                [filter]="true"
+                [showClear]="true"
+              />
+              <label for="fornitore">Fornitore</label>
+            </p-floatlabel>
+          </div>
+          <!-- Numero Fattura -->
+          <div class="flex-1">
+            <p-floatlabel variant="on">
+              <input
+                type="text"
+                pInputText
+                id="numeroFattura"
+                class="w-full"
+                [(ngModel)]="filtroNumeroFattura"
+                (ngModelChange)="filtraFatture()"
+              />
+              <label for="numeroFattura">Numero Fattura</label>
+            </p-floatlabel>
+          </div>
+          <!-- Bottoni -->
+          <div class="flex gap-2">
+            <p-button
+              icon="pi pi-refresh"
+              severity="secondary"
+              (click)="resetFiltri()"
+              pTooltip="Reset filtri"
+            />
+            <p-button
+              icon="pi pi-upload"
+              severity="info"
+              (click)="importCSV()"
+              pTooltip="Import CSV"
+            />
+            <p-button
+              icon="pi pi-calendar"
+              severity="help"
+              (click)="toggleFiltriAvanzati()"
+              pTooltip="Filtri per date"
+              [outlined]="!showFiltriAvanzati"
+            />
+          </div>
+        </div>
+
+        <!-- Sezione filtri avanzati (collassabile) -->
+        <div
+          *ngIf="showFiltriAvanzati"
+          class="border-top-1 surface-border pt-3"
+        >
+          <div class="grid">
+            <!-- Data Emissione -->
+            <div class="col-12 md:col-4">
+              <div class="p-2 border-1 surface-border border-round">
+                <h6
+                  class="text-sm font-bold text-600 mt-0 mb-2 flex align-items-center"
+                >
+                  <i class="pi pi-calendar text-blue-500 mr-2"></i>
+                  Data Emissione
+                </h6>
+                <div class="flex flex-column gap-2">
+                  <p-floatlabel variant="on">
+                    <p-datepicker
+                      inputId="dataEmissioneInizio"
+                      [(ngModel)]="filtroDataEmissioneInizio"
+                      (ngModelChange)="filtraFatture()"
+                      dateFormat="dd/mm/yy"
+                      showIcon
+                      styleClass="w-full"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="'2000:' + oggi.getFullYear()"
+                      [maxDate]="oggi"
+                      size="small"
+                    />
+                    <label for="dataEmissioneInizio">Da</label>
+                  </p-floatlabel>
+                  <p-floatlabel variant="on">
+                    <p-datepicker
+                      inputId="dataEmissioneFine"
+                      [(ngModel)]="filtroDataEmissioneFine"
+                      (ngModelChange)="filtraFatture()"
+                      dateFormat="dd/mm/yy"
+                      showIcon
+                      styleClass="w-full"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="'2000:' + oggi.getFullYear()"
+                      [maxDate]="oggi"
+                      size="small"
+                    />
+                    <label for="dataEmissioneFine">A</label>
+                  </p-floatlabel>
+                </div>
+              </div>
+            </div>
+
+            <!-- Data Trasmissione -->
+            <div class="col-12 md:col-4">
+              <div class="p-2 border-1 surface-border border-round">
+                <h6
+                  class="text-sm font-bold text-600 mt-0 mb-2 flex align-items-center"
+                >
+                  <i class="pi pi-send text-green-500 mr-2"></i>
+                  Data Trasmissione
+                </h6>
+                <div class="flex flex-column gap-2">
+                  <p-floatlabel variant="on">
+                    <p-datepicker
+                      inputId="dataTrasmissioneInizio"
+                      [(ngModel)]="filtroDataTrasmissioneInizio"
+                      (ngModelChange)="filtraFatture()"
+                      dateFormat="dd/mm/yy"
+                      showIcon
+                      styleClass="w-full"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="'2000:' + oggi.getFullYear()"
+                      [maxDate]="oggi"
+                      size="small"
+                    />
+                    <label for="dataTrasmissioneInizio">Da</label>
+                  </p-floatlabel>
+                  <p-floatlabel variant="on">
+                    <p-datepicker
+                      inputId="dataTrasmissioneFine"
+                      [(ngModel)]="filtroDataTrasmissioneFine"
+                      (ngModelChange)="filtraFatture()"
+                      dateFormat="dd/mm/yy"
+                      showIcon
+                      styleClass="w-full"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="'2000:' + oggi.getFullYear()"
+                      [maxDate]="oggi"
+                      size="small"
+                    />
+                    <label for="dataTrasmissioneFine">A</label>
+                  </p-floatlabel>
+                </div>
+              </div>
+            </div>
+
+            <!-- Data Inserimento -->
+            <div class="col-12 md:col-4">
+              <div class="p-2 border-1 surface-border border-round">
+                <h6
+                  class="text-sm font-bold text-600 mt-0 mb-2 flex align-items-center"
+                >
+                  <i class="pi pi-plus text-orange-500 mr-2"></i>
+                  Data Inserimento
+                </h6>
+                <div class="flex flex-column gap-2">
+                  <p-floatlabel variant="on">
+                    <p-datepicker
+                      inputId="dataInserimentoInizio"
+                      [(ngModel)]="filtroDataInserimentoInizio"
+                      (ngModelChange)="filtraFatture()"
+                      dateFormat="dd/mm/yy"
+                      showIcon
+                      styleClass="w-full"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="'2000:' + oggi.getFullYear()"
+                      [maxDate]="oggi"
+                      size="small"
+                    />
+                    <label for="dataInserimentoInizio">Da</label>
+                  </p-floatlabel>
+                  <p-floatlabel variant="on">
+                    <p-datepicker
+                      inputId="dataInserimentoFine"
+                      [(ngModel)]="filtroDataInserimentoFine"
+                      (ngModelChange)="filtraFatture()"
+                      dateFormat="dd/mm/yy"
+                      showIcon
+                      styleClass="w-full"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      [yearRange]="'2000:' + oggi.getFullYear()"
+                      [maxDate]="oggi"
+                      size="small"
+                    />
+                    <label for="dataInserimentoFine">A</label>
+                  </p-floatlabel>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Fatture -->
+    <div class="col-12 p-2">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="flex justify-between items-center">
+            <span class="p-card-title">Fatture di Acquisto</span>
+            <p-button
+              icon="pi pi-plus"
+              [text]="true"
+              (click)="showDialogFattura()"
+            ></p-button>
+          </div>
+        </ng-template>
+        <div class="space-y-2">
+          <ng-container *ngIf="fattureFiltrate | async as fattureF">
+            <p-virtualscroller
+              *ngIf="fattureF.length > 0; else noFatture"
+              [items]="fattureF"
+              [itemSize]="80"
+              scrollHeight="650px"
+            >
+              <ng-template pTemplate="item" let-fattura>
+                <div
+                  class="p-3 border-bottom-1 surface-border flex justify-between items-center text-sm"
+                  style="height: 80px"
+                >
+                  <!-- Sinistra -->
+                  <div class="flex items-center gap-4 overflow-hidden">
+                    <!-- Numero fattura e date -->
+                    <div class="flex flex-column gap-1">
+                      <span class="text-700 font-bold text-base">
+                        N. {{ fattura.numeroFattura }}
+                      </span>
+                      <div class="flex flex-column gap-1 text-xs">
+                        <span class="text-blue-600">
+                          <i class="pi pi-calendar mr-1"></i>
+                          Em: {{ fattura.dataEmissione | date: "dd/MM/yyyy" }}
+                        </span>
+                        <span class="text-green-600">
+                          <i class="pi pi-send mr-1"></i>
+                          Tr:
+                          {{ fattura.dataTrasmissione | date: "dd/MM/yyyy" }}
+                        </span>
+                      </div>
+                    </div>
+                    <!-- Dati fornitore -->
+                    <div class="flex flex-column max-w-15rem">
+                      <span class="text-700 font-medium truncate">
+                        {{
+                          fattura.fornitore?.id
+                            | fornitoreNome: (fornitori | async) || []
+                        }}
+                      </span>
+                      <span class="text-500 text-xs truncate">
+                        {{ fattura.denominazioneFornitore }}
+                      </span>
+                      <span class="text-500 text-xs">
+                        CF: {{ fattura.codiceFiscaleFornitore }}
+                      </span>
+                      <span class="text-500 text-xs">
+                        P.IVA: {{ fattura.pIvaFornitore }}
+                      </span>
+                    </div>
+                  </div>
+                  <!-- Centro - Importi -->
+                  <div class="flex items-center gap-4 text-center">
+                    <div class="flex flex-column">
+                      <span class="text-xs text-500">Imponibile</span>
+                      <span class="text-blue-600 font-bold">
+                        {{ fattura.imponibile | number: "1.2-2" }}€
+                      </span>
+                    </div>
+                    <div class="flex flex-column">
+                      <span class="text-xs text-500">IVA</span>
+                      <span class="text-orange-600 font-bold">
+                        {{ fattura.imposta | number: "1.2-2" }}€
+                      </span>
+                    </div>
+                    <div class="flex flex-column">
+                      <span class="text-xs text-500">Totale</span>
+                      <span class="text-green-600 font-bold text-lg">
+                        {{
+                          fattura.imponibile + fattura.imposta
+                            | number: "1.2-2"
+                        }}€
+                      </span>
+                    </div>
+                  </div>
+                  <!-- Destra -->
+                  <div class="flex items-center gap-2">
+                    <p-button
+                      icon="pi pi-pencil"
+                      size="small"
+                      (click)="showDialogFattura(fattura)"
+                      styleClass="p-button-sm"
+                      severity="secondary"
+                    />
+                    <p-button
+                      icon="pi pi-trash"
+                      size="small"
+                      styleClass="p-button-text p-button-sm"
+                      severity="danger"
+                      (click)="confirmDelete(fattura.id)"
+                    />
+                  </div>
+                </div>
+              </ng-template>
+            </p-virtualscroller>
+            <ng-template #noFatture>
+              <p class="p-3 text-center text-sm text-500">
+                Non ci sono fatture di acquisto.
+              </p>
+            </ng-template>
+          </ng-container>
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Colonna destra -->
+  <div class="col-4 p-0 space-y-4">
+    <!-- Riepilogo -->
+    <div class="col-12 p-2">
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="flex justify-between items-center">
+            <span class="p-card-title">Riepilogo Fatture</span>
+            <p-button
+              severity="secondary"
+              icon="pi pi-info-circle"
+              [text]="true"
+              (click)="opRiepilogo.toggle($event)"
+            ></p-button>
+          </div>
+        </ng-template>
+        <div class="space-y-3 mt-3 text-sm text-500">
+          <ng-container *ngFor="let key of intervalOrder; let i = index">
+            <div class="flex justify-between items-center">
+              <!-- Etichetta personalizzata per ogni bucket -->
+              <span>
+                <!-- 0: prima di 3 anni fa → intervallo completo -->
+                <ng-container *ngIf="i === 0; else notFirst">
+                  {{ intervals[key].da | date: "dd/MM/yy" }}
+                  –
+                  {{ intervals[key].a | date: "dd/MM/yy" }}
+                </ng-container>
+                <ng-template #notFirst>
+                  <!-- 1–2: bucket annuali (due anni fa, anno precedente) → "Anno YYYY" -->
+                  <ng-container *ngIf="i > 0 && i < 3; else notAnnual">
+                    {{ intervals[key].da | date: "yyyy" }}
+                  </ng-container>
+                  <ng-template #notAnnual>
+                    <!-- 3: resto anno corrente → intervallo completo -->
+                    <ng-container *ngIf="i === 3; else lastThree">
+                      {{ intervals[key].da | date: "dd/MM" }}
+                      -
+                      {{ intervals[key].a | date: "dd/MM/yyyy" }}
+                    </ng-container>
+                    <ng-template #lastThree>
+                      <!-- ≥4: ultimi 3 mesi → solo nome mese in italiano uppercase -->
+                      {{ intervals[key].da | date: "LLLL" | uppercase }}
+                    </ng-template>
+                  </ng-template>
+                </ng-template>
+              </span>
+
+              <!-- Valori imponibile, iva e totale -->
+              <div class="text-right text-xs">
+                <div class="text-blue-600 font-semibold">
+                  {{ summary[key].imponibile | number: "1.2-2" }}€
+                </div>
+                <div class="text-orange-600 font-semibold">
+                  +{{ summary[key].imposta | number: "1.2-2" }}€
+                </div>
+                <div
+                  class="text-green-600 font-bold border-t-1 border-gray-300"
+                >
+                  {{ summary[key].totale | number: "1.2-2" }}€
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <hr class="my-3" />
+
+        <!-- Totali complessivi -->
+        <div class="space-y-2 text-end text-sm text-700">
+          <div>
+            <p class="m-0 font-bold">Totale Imponibile:</p>
+            <p class="text-blue-600 text-lg font-bold m-0">
+              {{ totaleImponibile | number: "1.2-2" }}€
+            </p>
+          </div>
+          <div>
+            <p class="m-0 font-bold">Totale IVA:</p>
+            <p class="text-orange-600 text-lg font-bold m-0">
+              {{ totaleImposta | number: "1.2-2" }}€
+            </p>
+          </div>
+          <div>
+            <p class="m-0 font-bold">Totale Fatture:</p>
+            <p class="text-green-600 text-xl font-bold m-0">
+              {{ totaleFatture | number: "1.2-2" }}€
+            </p>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>
+
+<!-- Dialog per add/edit -->
+<p-dialog
+  header="{{ editingFattura ? 'Modifica Fattura' : 'Nuova Fattura' }}"
+  [(visible)]="displayDialog"
+  [modal]="true"
+  [style]="{ width: '500px' }"
+  [closeOnEscape]="true"
+  (onHide)="onDialogHide()"
+  class="p-shadow-4"
+>
+  <form [formGroup]="formFattura" class="p-fluid space-y-4">
+    <!-- Row 1: Numero fattura e Date -->
+    <div class="flex gap-4">
+      <!-- Numero Fattura -->
+      <div class="flex-1 flex flex-column gap-1">
+        <label for="numeroFattura" class="font-medium text-700"
+          >Numero Fattura</label
+        >
+        <input
+          type="text"
+          pInputText
+          id="numeroFattura"
+          formControlName="numeroFattura"
+          class="w-full"
+        />
+      </div>
+      <!-- Data Emissione -->
+      <div class="flex-1 flex flex-column gap-1">
+        <label for="dataEmissione" class="font-medium text-700"
+          >Data Emissione</label
+        >
+        <p-datepicker
+          id="dataEmissione"
+          formControlName="dataEmissione"
+          dateFormat="dd/mm/yy"
+          showIcon
+          styleClass="w-full"
+          appendTo="body"
+          [monthNavigator]="true"
+          [yearNavigator]="true"
+          [yearRange]="'2000:' + oggi.getFullYear()"
+          [maxDate]="oggi"
+        ></p-datepicker>
+      </div>
+    </div>
+
+    <!-- Row 2: Data Trasmissione -->
+    <div class="flex flex-column gap-1">
+      <label for="dataTrasmissione" class="font-medium text-700"
+        >Data Trasmissione</label
+      >
+      <p-datepicker
+        id="dataTrasmissione"
+        formControlName="dataTrasmissione"
+        dateFormat="dd/mm/yy"
+        showIcon
+        styleClass="w-full"
+        appendTo="body"
+        [monthNavigator]="true"
+        [yearNavigator]="true"
+        [yearRange]="'2000:' + oggi.getFullYear()"
+        [maxDate]="oggi"
+      ></p-datepicker>
+    </div>
+
+    <!-- Row 3: Fornitore -->
+    <div class="flex flex-column gap-1">
+      <label for="fornitore" class="font-medium text-700">Fornitore</label>
+      <p-select
+        id="fornitore"
+        [options]="(fornitori | async) || []"
+        optionLabel="ragioneSociale"
+        formControlName="fornitore"
+        [filter]="true"
+        class="w-full"
+        appendTo="body"
+        inputStyleClass="p-inputtext-sm"
+      ></p-select>
+    </div>
+
+    <!-- Row 4: Denominazione Fornitore -->
+    <div class="flex flex-column gap-1">
+      <label for="denominazioneFornitore" class="font-medium text-700"
+        >Denominazione Fornitore</label
+      >
+      <input
+        type="text"
+        pInputText
+        id="denominazioneFornitore"
+        formControlName="denominazioneFornitore"
+        class="w-full"
+      />
+    </div>
+
+    <!-- Row 5: Codice Fiscale e P.IVA -->
+    <div class="flex gap-4">
+      <!-- Codice Fiscale -->
+      <div class="flex-1 flex flex-column gap-1">
+        <label for="codiceFiscaleFornitore" class="font-medium text-700"
+          >Codice Fiscale</label
+        >
+        <input
+          type="text"
+          pInputText
+          id="codiceFiscaleFornitore"
+          formControlName="codiceFiscaleFornitore"
+          class="w-full"
+        />
+      </div>
+      <!-- P.IVA -->
+      <div class="flex-1 flex flex-column gap-1">
+        <label for="pIvaFornitore" class="font-medium text-700">P. IVA</label>
+        <input
+          type="text"
+          pInputText
+          id="pIvaFornitore"
+          formControlName="pIvaFornitore"
+          class="w-full"
+        />
+      </div>
+    </div>
+
+    <!-- Row 6: Importi -->
+    <div class="flex gap-4">
+      <!-- Imponibile -->
+      <div class="flex-1 flex flex-column gap-1">
+        <label for="imponibile" class="font-medium text-700">Imponibile</label>
+        <p-inputNumber
+          id="imponibile"
+          formControlName="imponibile"
+          mode="currency"
+          currency="EUR"
+          locale="it-IT"
+          [minFractionDigits]="2"
+          [maxFractionDigits]="2"
+          styleClass="w-full"
+          inputStyleClass="text-blue-600 font-bold"
+        ></p-inputNumber>
+      </div>
+      <!-- IVA -->
+      <div class="flex-1 flex flex-column gap-1">
+        <label for="imposta" class="font-medium text-700">IVA</label>
+        <p-inputNumber
+          id="imposta"
+          formControlName="imposta"
+          mode="currency"
+          currency="EUR"
+          locale="it-IT"
+          [minFractionDigits]="2"
+          [maxFractionDigits]="2"
+          styleClass="w-full"
+          inputStyleClass="text-orange-600 font-bold"
+        ></p-inputNumber>
+      </div>
+    </div>
+
+    <!-- Totale (readonly) -->
+    <div class="flex flex-column gap-1">
+      <label class="font-medium text-700">Totale Fattura</label>
+      <div
+        class="text-center text-2xl font-bold text-green-600 p-3 bg-green-50 border-round"
+      >
+        {{
+          (formFattura.get("imponibile")?.value || 0) +
+            (formFattura.get("imposta")?.value || 0) | number: "1.2-2"
+        }}€
+      </div>
+    </div>
+
+    <!-- Footer con bottoni -->
+    <p-footer class="flex justify-between gap-2">
+      <p-button
+        label="Annulla"
+        [text]="true"
+        (click)="displayDialog = false"
+      ></p-button>
+      <p-button
+        label="Salva"
+        icon="pi pi-check"
+        severity="primary"
+        (click)="salvaFattura()"
+        [disabled]="formFattura.invalid"
+      ></p-button>
+    </p-footer>
+  </form>
+</p-dialog>
+
+<!-- Popover per Riepilogo -->
+<p-popover #opRiepilogo>
+  <div class="flex justify-between items-center">
+    <span class="p-card-title p-2 font-bold">Guida al Riepilogo Fatture</span>
+  </div>
+
+  <div class="text-sm space-y-4 p-4 w-[45rem] h-[45rem] overflow-y-scroll">
+    <!-- Bucket 1: Prima di 3 anni fa -->
+    <section class="space-y-1">
+      <h5 class="font-semibold text-700">Prima di 3 anni fa</h5>
+      <p class="text-500">
+        Calcola tutti gli <strong>Imponibili</strong>, <strong>IVA</strong> e
+        <strong>Totali</strong>
+        delle fatture registrate fino al 31 dicembre dell'anno antecedente al
+        triennio più recente.
+      </p>
+      <code class="block bg-surface-200 p-2 rounded text-xs">
+        SUM(imponibile, iva, totale) WHERE data_emissione ≤ 31/12/(ANNO–3)
+      </code>
+    </section>
+
+    <!-- Bucket 2: Due anni fa -->
+    <section class="space-y-1">
+      <h5 class="font-semibold text-700">Due anni fa</h5>
+      <p class="text-500">
+        Raggruppa <strong>Imponibili</strong>, <strong>IVA</strong> e
+        <strong>Totali</strong>
+        per tutto l'anno solare di due anni fa.
+      </p>
+      <code class="block bg-surface-200 p-2 rounded text-xs">
+        SUM(imponibile, iva, totale) WHERE YEAR(data_emissione) = ANNO–2
+      </code>
+    </section>
+
+    <!-- Bucket 3: Anno precedente -->
+    <section class="space-y-1">
+      <h5 class="font-semibold text-700">Anno precedente</h5>
+      <p class="text-500">
+        Totali di <strong>Imponibili</strong>, <strong>IVA</strong> e
+        <strong>Totali</strong>
+        dell'anno solare immediatamente precedente.
+      </p>
+      <code class="block bg-surface-200 p-2 rounded text-xs">
+        SUM(imponibile, iva, totale) WHERE YEAR(data_emissione) = ANNO–1
+      </code>
+    </section>
+
+    <!-- Bucket 4: Resto dell'anno corrente -->
+    <section class="space-y-1">
+      <h5 class="font-semibold text-700">Resto dell'anno corrente</h5>
+      <p class="text-500">
+        Somma di <strong>Imponibili</strong>, <strong>IVA</strong> e
+        <strong>Totali</strong>
+        da inizio anno fino all'ultimo giorno prima dell'inizio degli ultimi tre
+        mesi.
+      </p>
+      <code class="block bg-surface-200 p-2 rounded text-xs">
+        SUM(imponibile, iva, totale) WHERE data_emissione ≥ 01/01/ANNO AND
+        data_emissione &lt; primo_giorno_del_terzultimo_mese
+      </code>
+    </section>
+
+    <!-- Bucket 5-7: Ultimi 3 mesi -->
+    <section class="space-y-1">
+      <h5 class="font-semibold text-700">Ultimi 3 mesi</h5>
+      <p class="text-500">Per ciascuno degli ultimi tre mesi:</p>
+      <div class="list-disc list-inside text-500 space-y-1">
+        <p>
+          <code class="inline">
+            Imponibile = SUM(imponibile) WHERE mese = mese_corrente
+          </code>
+        </p>
+        <p>
+          <code class="inline">
+            IVA = SUM(iva) WHERE mese = mese_corrente
+          </code>
+        </p>
+        <p>
+          <code class="inline">
+            Totale = SUM(totale) WHERE mese = mese_corrente
+          </code>
+        </p>
+      </div>
+    </section>
+
+    <!-- Totali complessivi -->
+    <section class="space-y-1">
+      <h5 class="font-semibold text-700">Totali Complessivi</h5>
+      <p class="text-500">
+        <strong>Totale Imponibile:</strong> Somma di tutti gli imponibili dei
+        sette intervalli.
+      </p>
+      <p class="text-500">
+        <strong>Totale IVA:</strong> Somma di tutta l'IVA dei sette intervalli.
+      </p>
+      <p class="text-500">
+        <strong>Totale Fatture:</strong> Somma di tutti i totali dei sette
+        intervalli (imponibile + IVA).
+      </p>
+    </section>
+  </div>
+</p-popover>

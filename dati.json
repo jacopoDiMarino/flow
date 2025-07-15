@@ -11,66 +11,25 @@
     {
       "id": "fc711014-c615-435b-b07b-948a2be91c4e",
       "ragioneSociale": "Gennaro"
-    },
-    {
-      "id": "91f53ef2-ef14-485f-b3d2-37e637c0e1b9",
-      "ragioneSociale": "Gennarino"
     }
   ],
-  "conti": [
+  "conti": [],
+  "fattureAcquisto": [
     {
-      "id": "389838ab-98ed-41b0-8539-2201d3aead2b",
-      "inseritoIl": "2025-07-01T13:52:06.730Z",
-      "dataOperazione": "2025-03-11T23:00:00.000Z",
-      "tipologia": "PAGAMENTO",
-      "idFornitore": "9e7d9f65-f2b7-4b13-89cb-6377a4046c1f",
-      "importo": 2340,
-      "descrizione": ""
-    },
-    {
-      "id": "8bd20ce8-5515-43d0-bb67-63fc8bc03095",
-      "inseritoIl": "2025-07-01T16:53:12.298Z",
-      "dataOperazione": "2025-06-30T22:00:00.000Z",
-      "tipologia": "ACQUISTO",
-      "idFornitore": "9e7d9f65-f2b7-4b13-89cb-6377a4046c1f",
-      "importo": 7500,
-      "descrizione": "piccolezze"
-    },
-    {
-      "id": "ff8f23e0-e0b3-469c-9e51-1234e577a08b",
-      "inseritoIl": "2025-07-01T16:57:43.634Z",
-      "dataOperazione": "2025-05-13T22:00:00.000Z",
-      "tipologia": "PAGAMENTO",
-      "idFornitore": "fc711014-c615-435b-b07b-948a2be91c4e",
-      "importo": 20,
-      "descrizione": ""
-    },
-    {
-      "id": "69eac946-0c6b-4a13-8635-d9635a99fa73",
-      "inseritoIl": "2025-07-01T17:54:53.566Z",
-      "dataOperazione": "2025-05-20T22:00:00.000Z",
-      "tipologia": "RIMBORSO",
-      "idFornitore": "9e7d9f65-f2b7-4b13-89cb-6377a4046c1f",
-      "importo": 5000,
-      "descrizione": ""
-    },
-    {
-      "id": "a6cd52d0-f0b3-47f8-94b4-18b3c11a596e",
-      "inseritoIl": "2025-07-02T10:26:45.692Z",
-      "dataOperazione": "2025-06-30T22:00:00.000Z",
-      "tipologia": "PAGAMENTO",
-      "idFornitore": "9e7d9f65-f2b7-4b13-89cb-6377a4046c1f",
-      "importo": 10000,
-      "descrizione": "asda"
-    },
-    {
-      "id": "8d9cd1b0-a6b4-4c3b-a296-69d69f857013",
-      "inseritoIl": "2025-07-02T12:10:21.006Z",
-      "dataOperazione": "2025-05-05T22:00:00.000Z",
-      "tipologia": "ACQUISTO",
-      "idFornitore": "035912f4-8b6a-4497-bc31-734b1ed2a6f8",
-      "importo": 15000,
-      "descrizione": ""
+      "id": "3eee7fd2-c45e-46df-b985-fde140f93add",
+      "numeroFattura": "2342",
+      "dataEmissione": "2025-07-01T22:00:00.000Z",
+      "dataTrasmissione": "2025-07-04T22:00:00.000Z",
+      "dataInserimento": "2025-07-15T12:12:56.991Z",
+      "codiceFiscaleFornitore": "23342",
+      "pIvaFornitore": "234344",
+      "denominazioneFornitore": "GRW",
+      "fornitore": {
+        "id": "fc711014-c615-435b-b07b-948a2be91c4e",
+        "ragioneSociale": "Gennaro"
+      },
+      "imponibile": 320,
+      "imposta": 41.2
     }
   ]
 }
