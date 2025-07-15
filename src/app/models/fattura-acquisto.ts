@@ -1,6 +1,6 @@
-import { Fornitore } from '../models/fornitore';
+import { Fornitore } from "./fornitore";
 
-export interface FatturaInterface {
+export interface FatturaAcquistoInterface {
   id: string;
   numeroFattura: string;
   dataEmissione: string;
@@ -14,7 +14,7 @@ export interface FatturaInterface {
   imposta: number;
 }
 
-export class Fattura implements FatturaInterface {
+export class FatturaAcquisto implements FatturaAcquistoInterface {
   id: string;
   numeroFattura: string;
   dataEmissione: string;
@@ -27,7 +27,7 @@ export class Fattura implements FatturaInterface {
   imponibile: number;
   imposta: number;
 
-  constructor(fattura: FatturaInterface) {
+  constructor(fattura: FatturaAcquistoInterface) {
     this.id = fattura.id;
     this.numeroFattura = fattura.numeroFattura;
     this.dataEmissione = fattura.dataEmissione;
