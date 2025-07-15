@@ -1,24 +1,24 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
-} from '@angular/forms';
-import { InputTextModule } from 'primeng/inputtext';
+} from "@angular/forms";
+import { InputTextModule } from "primeng/inputtext";
 import {
   AutoCompleteCompleteEvent,
   AutoCompleteModule,
-} from 'primeng/autocomplete';
-import { FornitoriService } from '../../services/fornitori.service';
-import { Fornitore } from '../../models/fornitore';
-import { TipologiaConto } from '../../enums/tipologiaConto.enum';
-import { SelectModule } from 'primeng/select';
-import { ContiService } from '../../services/conti.service';
-import { Conto } from '../../models/conto';
-import { v4 as uuidv4 } from 'uuid';
-import { DatePickerModule } from 'primeng/datepicker';
+} from "primeng/autocomplete";
+import { FornitoriService } from "../../services/fornitori.service";
+import { Fornitore } from "../../models/fornitore";
+import { TipologiaConto } from "../../enums/tipologiaConto.enum";
+import { SelectModule } from "primeng/select";
+import { ContiService } from "../../services/conti.service";
+import { Conto } from "../../models/conto";
+import { v4 as uuidv4 } from "uuid";
+import { DatePickerModule } from "primeng/datepicker";
 import {
   AsyncPipe,
   DatePipe,
@@ -31,29 +31,29 @@ import {
   NgSwitchDefault,
   TitleCasePipe,
   UpperCasePipe,
-} from '@angular/common';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { FornitoreNomePipe } from '../../pipes/fornitoreNome.pipe';
-import { IftaLabelModule } from 'primeng/iftalabel';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { ScrollerModule } from 'primeng/scroller';
-import { DialogModule } from 'primeng/dialog';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
-import { PopoverModule } from 'primeng/popover';
-import { TextareaModule } from 'primeng/textarea';
+} from "@angular/common";
+import { BehaviorSubject, Subscription } from "rxjs";
+import { CardModule } from "primeng/card";
+import { ButtonModule } from "primeng/button";
+import { FornitoreNomePipe } from "../../pipes/fornitoreNome.pipe";
+import { IftaLabelModule } from "primeng/iftalabel";
+import { FloatLabelModule } from "primeng/floatlabel";
+import { ScrollerModule } from "primeng/scroller";
+import { DialogModule } from "primeng/dialog";
+import { InputNumberModule } from "primeng/inputnumber";
+import { ConfirmDialogModule } from "primeng/confirmdialog";
+import { ConfirmationService } from "primeng/api";
+import { PopoverModule } from "primeng/popover";
+import { TextareaModule } from "primeng/textarea";
 
 type IntervalKey =
-  | 'meseCorrente'
-  | 'mesePrecedente'
-  | 'dueMesiFa'
-  | 'restoAnnoCorrente'
-  | 'annoPrecedente'
-  | 'dueAnniFa'
-  | 'primaDiTreAnniFa';
+  | "meseCorrente"
+  | "mesePrecedente"
+  | "dueMesiFa"
+  | "restoAnnoCorrente"
+  | "annoPrecedente"
+  | "dueAnniFa"
+  | "primaDiTreAnniFa";
 
 interface DateInterval {
   da: Date;
@@ -61,9 +61,9 @@ interface DateInterval {
 }
 
 @Component({
-  selector: 'app-conti',
-  templateUrl: './conti.component.html',
-  styleUrls: ['./conti.component.scss'],
+  selector: "app-conti",
+  templateUrl: "./conti.component.html",
+  styleUrls: ["./conti.component.scss"],
   standalone: true,
   imports: [
     FormsModule,
@@ -101,7 +101,7 @@ export class ContiComponent implements OnInit, OnDestroy {
   contiFiltrati: BehaviorSubject<Conto[]> = new BehaviorSubject<Conto[]>([]);
   contiSubscription: Subscription;
   fornitori: BehaviorSubject<Fornitore[]> = new BehaviorSubject<Fornitore[]>(
-    [],
+    []
   );
   fornitoriSubscription: Subscription;
   oggi: Date = new Date();
@@ -113,13 +113,13 @@ export class ContiComponent implements OnInit, OnDestroy {
   // variabili per riepilogo
   // 7 intervalli temporali
   intervals: Record<
-    | 'meseCorrente'
-    | 'mesePrecedente'
-    | 'dueMesiFa'
-    | 'restoAnnoCorrente'
-    | 'annoPrecedente'
-    | 'dueAnniFa'
-    | 'primaDiTreAnniFa',
+    | "meseCorrente"
+    | "mesePrecedente"
+    | "dueMesiFa"
+    | "restoAnnoCorrente"
+    | "annoPrecedente"
+    | "dueAnniFa"
+    | "primaDiTreAnniFa",
     { da: Date; a: Date }
   > = {
     meseCorrente: { da: new Date(), a: new Date() },
@@ -132,13 +132,13 @@ export class ContiComponent implements OnInit, OnDestroy {
   };
 
   intervalOrder: (keyof typeof this.intervals)[] = [
-    'primaDiTreAnniFa',
-    'dueAnniFa',
-    'annoPrecedente',
-    'restoAnnoCorrente',
-    'dueMesiFa',
-    'mesePrecedente',
-    'meseCorrente',
+    "primaDiTreAnniFa",
+    "dueAnniFa",
+    "annoPrecedente",
+    "restoAnnoCorrente",
+    "dueMesiFa",
+    "mesePrecedente",
+    "meseCorrente",
   ];
 
   // Totali per bucket
@@ -164,18 +164,18 @@ export class ContiComponent implements OnInit, OnDestroy {
     public fornitoriService: FornitoriService,
     public contiService: ContiService,
     private fb: FormBuilder,
-    private confirmationService: ConfirmationService,
+    private confirmationService: ConfirmationService
   ) {
     this.contiSubscription = this.contiService.conti.subscribe((res) => {
       // this.contiFiltrati.next(res);
       this.filtraConti();
-      console.log('conti recuperati');
+      console.log("conti recuperati");
     });
     this.fornitoriSubscription = this.fornitoriService.fornitori.subscribe(
       (res) => {
         this.fornitori.next(res);
-        console.log('fornitori recuperati');
-      },
+        console.log("fornitori recuperati");
+      }
     );
   }
 
@@ -189,27 +189,27 @@ export class ContiComponent implements OnInit, OnDestroy {
       tipologia: [null, Validators.required],
       idFornitore: [null, Validators.required],
       importo: [0, [Validators.required, Validators.min(0.01)]],
-      descrizione: [''],
+      descrizione: [""],
     });
   }
 
   confirmDelete(id: string) {
     this.confirmationService.confirm({
-      message: 'Sei sicuro di voler eliminare questo conto?',
-      header: 'Confermi eliminazione?',
-      icon: 'pi pi-exclamation-triangle',
+      message: "Sei sicuro di voler eliminare questo conto?",
+      header: "Confermi eliminazione?",
+      icon: "pi pi-exclamation-triangle",
       acceptButtonProps: {
-        label: 'Elimina',
+        label: "Elimina",
       },
       rejectButtonProps: {
-        label: 'Annulla',
-        severity: 'secondary',
+        label: "Annulla",
+        severity: "secondary",
         text: true,
       },
-      acceptIcon: 'pi pi-check',
-      rejectIcon: 'pi pi-times',
+      acceptIcon: "pi pi-check",
+      rejectIcon: "pi pi-times",
       closable: false,
-      defaultFocus: 'reject',
+      defaultFocus: "reject",
       accept: () => {
         this.contiService.deleteConto(id);
       },
@@ -236,7 +236,7 @@ export class ContiComponent implements OnInit, OnDestroy {
         tipologia: null,
         idFornitore: this.filtroFornitore || null,
         importo: 0,
-        descrizione: '',
+        descrizione: "",
       });
     }
 
@@ -282,7 +282,7 @@ export class ContiComponent implements OnInit, OnDestroy {
     const query = event.query.toLowerCase();
     let fornitori = [...this.fornitoriService.fornitori.getValue()];
     this.fornitoriFiltrati = fornitori.filter((f) =>
-      f.ragioneSociale.toLowerCase().includes(query),
+      f.ragioneSociale.toLowerCase().includes(query)
     );
   }
   // per popolare il select tipologia
@@ -299,20 +299,20 @@ export class ContiComponent implements OnInit, OnDestroy {
 
     if (this.filtroDataInizio !== null) {
       conti = conti.filter(
-        (c) => new Date(c.dataOperazione) >= this.filtroDataInizio!,
+        (c) => new Date(c.dataOperazione) >= this.filtroDataInizio!
       );
     }
 
     if (this.filtroDataFine !== null) {
       conti = conti.filter(
-        (c) => new Date(c.dataOperazione) <= this.filtroDataFine!,
+        (c) => new Date(c.dataOperazione) <= this.filtroDataFine!
       );
     }
 
     conti.sort(
       (a, b) =>
         new Date(b.dataOperazione).getTime() -
-        new Date(a.dataOperazione).getTime(),
+        new Date(a.dataOperazione).getTime()
     );
 
     this.contiFiltrati.next(conti);
@@ -370,11 +370,11 @@ export class ContiComponent implements OnInit, OnDestroy {
       >) {
         const { da, a } = this.intervals[key];
         if (d >= da.getTime() && d <= a.getTime()) {
-          if (c.tipologia === 'ACQUISTO') {
+          if (c.tipologia === "ACQUISTO") {
             this.summary[key].netAcquisti += c.importo;
-          } else if (c.tipologia === 'RIMBORSO') {
+          } else if (c.tipologia === "RIMBORSO") {
             this.summary[key].netAcquisti -= c.importo;
-          } else if (c.tipologia === 'PAGAMENTO') {
+          } else if (c.tipologia === "PAGAMENTO") {
             this.summary[key].pagamenti += c.importo;
           }
           break;
@@ -385,11 +385,11 @@ export class ContiComponent implements OnInit, OnDestroy {
     // 4) Totali complessivi e debito
     this.totaleNetAcquisti = Object.values(this.summary).reduce(
       (sum, b) => sum + b.netAcquisti,
-      0,
+      0
     );
     this.totalePagamenti = Object.values(this.summary).reduce(
       (sum, b) => sum + b.pagamenti,
-      0,
+      0
     );
     this.debitoResiduo = this.totaleNetAcquisti - this.totalePagamenti;
   }
